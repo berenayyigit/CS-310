@@ -24,8 +24,7 @@ public class Event {
 		this.intro = intro;
 		this.org = org;
 		this.loc = loc;
-		this.date = date;
-		
+		this.date = date;	
 	}
 	
 	public Event() {
