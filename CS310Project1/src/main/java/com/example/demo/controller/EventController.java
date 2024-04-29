@@ -1,22 +1,32 @@
-package com.example.demo.service;
+package com.example.demo.controller;
+
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.example.demo.model.EventDate;
-import com.example.demo.model.Organization;
-import com.example.demo.Cs310ProjectPhase1Application;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.demo.model.Event;
+import com.example.demo.model.EventDate;
 import com.example.demo.model.Location;
+import com.example.demo.model.Organization;
 import com.example.demo.repo.EventRepo;
 import com.example.demo.repo.OrganizationRepo;
+import com.example.demo.controller.EventController;
+import com.example.demo.model.EventPayload;
 
 import jakarta.annotation.PostConstruct;
 
-@Service
-public class EventService {
+
+@RestController
+@RequestMapping("/ourevents")
+public class EventController {
     
     @Autowired
     private EventRepo eventRepo;
@@ -24,7 +34,7 @@ public class EventService {
     @Autowired
     private OrganizationRepo organizationRepo;
     
-    Logger logger = LoggerFactory.getLogger(EventService.class);
+    Logger logger = LoggerFactory.getLogger(EventController.class);
     
     @PostConstruct
     public void init() {
@@ -65,19 +75,52 @@ public class EventService {
     	}
     }
     
+    @GetMapping("/organizations")
+    public List<Organization> getAllOrganizations() {
+        return organizationRepo.findAll();
+    }
+	@PostMapping("/organizations/save")
+	public Organization saveOrganization(@RequestBody Organization organization) {
+		
+		Organization organizationSaved = organizationRepo.save(organization);
+		return organizationSaved;
+	}   
+    
+	@GetMapping("/events")
     public List<Event> getAllEvents() {
         return eventRepo.findAll();
     }
-    
+	
+	@PostMapping("/events/search")
+	public List<Event> searchEvent(@RequestBody EventPayload payload){
+		
+		List<Event> events=eventRepo.findByNameContainsIgnoreCase(payload.getName());
+		
+		return events;
+	}	
+	
+	
+	@PostMapping("/events/save")
+	public Event saveEvent(@RequestBody EventPayload payload)
+	{
+		
+		Organization org = new Organization();
+		org.setId(payload.getOrgid());
+		
+		
+		Event eventToSave = new Event(payload.getName(), 
+				payload.getIntro(), org, payload.getLoc(),payload.getDate());
+		
+		Event eventSaved= eventRepo.save(eventToSave);
+		
+		return eventSaved;
+		
+	}
+		
+	@GetMapping("/eventscount")
     public long getEventCount() {
         return eventRepo.count();
     }
     
-    public void deleteEvent(String eventId) {
-        eventRepo.deleteById(eventId);
-    }
     
-    public void updateEvent(Event event) {
-        eventRepo.save(event);
-    }
 }
