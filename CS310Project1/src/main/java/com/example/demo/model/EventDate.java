@@ -70,7 +70,7 @@ public class EventDate {
 	}
 
 	public String getTime() {
-		return time;
+		return year + "-" + month + "-" + day + "-" + hour + "-" + minute;
 	}
 
 	public void setTime(String time) {
