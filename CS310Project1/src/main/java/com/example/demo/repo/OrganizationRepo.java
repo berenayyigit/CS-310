@@ -11,4 +11,5 @@ import com.example.demo.repo.OrganizationRepo;
 public interface OrganizationRepo extends MongoRepository<Organization, String>{
 	public List<Event> findByName(String name);
 
+	public List<Organization> findByNameContainsIgnoreCase(String name);
 }

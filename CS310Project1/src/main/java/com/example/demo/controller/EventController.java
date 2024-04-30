@@ -85,7 +85,14 @@ public class EventController {
 		Organization organizationSaved = organizationRepo.save(organization);
 		return organizationSaved;
 	}   
-    
+	@PostMapping("/organizations/search")
+	public List<Organization> searchOrganization(@RequestBody Organization org1){
+		
+		List<Organization> orgs=organizationRepo.findByNameContainsIgnoreCase(org1.getName());
+		
+		return orgs;
+	}
+	
 	@GetMapping("/events")
     public List<Event> getAllEvents() {
         return eventRepo.findAll();
@@ -117,6 +124,11 @@ public class EventController {
 		
 	}
 		
+	@GetMapping("/events/sort")
+    public List<Event> sortedEvents() {
+		return eventRepo.findAllByOrderByDateAsc();
+	}
+	
 	@GetMapping("/eventscount")
     public long getEventCount() {
         return eventRepo.count();
