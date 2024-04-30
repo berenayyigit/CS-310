@@ -85,6 +85,19 @@ public class EventController {
 		Organization organizationSaved = organizationRepo.save(organization);
 		return organizationSaved;
 	}   
+
+	@DeleteMapping("/organizations/delete/{organizationtId}")
+	public ResponseEntity<String> deleteOrganization(@PathVariable String organizationtId) {
+	    Optional<Organization> organizationOptional = organizationRepo.findById(organizationtId);
+	    
+	    if (organizationOptional.isPresent()) {
+	    	organizationRepo.deleteById(organizationtId);
+	        return ResponseEntity.ok( organizationtId + " deleted successfully.");
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	}
+
 	@PostMapping("/organizations/search")
 	public List<Organization> searchOrganization(@RequestBody Organization org1){
 		
@@ -122,6 +135,18 @@ public class EventController {
 		
 		return eventSaved;
 		
+	}
+
+	@DeleteMapping("/events/delete/{eventId}")
+	public ResponseEntity<String> deleteEvent(@PathVariable String eventId) {
+	    Optional<Event> eventOptional = eventRepo.findById(eventId);
+	    
+	    if (eventOptional.isPresent()) {
+	        eventRepo.deleteById(eventId);
+	        return ResponseEntity.ok(eventId + " deleted successfully.");
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
 	}
 		
 	@GetMapping("/events/sort")
