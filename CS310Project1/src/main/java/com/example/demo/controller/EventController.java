@@ -196,7 +196,7 @@ public class EventController {
 		return eventRepo.findAllByOrderByDateAsc();
 	}
 	
-    @GetMapping("/events/searchbydate")
+    @PostMapping("/events/searchbydate")
     public List<Event> searchEventsByPartialDate(
             @RequestParam(required = false) String year,
             @RequestParam(required = false) String month,
