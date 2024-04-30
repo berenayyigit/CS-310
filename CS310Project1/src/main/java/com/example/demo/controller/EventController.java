@@ -1,15 +1,19 @@
 package com.example.demo.controller;
 
-import java.util.List;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.Event;
@@ -86,6 +90,21 @@ public class EventController {
 		return organizationSaved;
 	}   
 
+	@PutMapping("/organizations/update/{organizationId}")
+	public ResponseEntity<Organization> updateOrganization(@PathVariable String organizationId, @RequestBody Organization updatedOrganization) {
+	    Optional<Organization> organizationOptional = organizationRepo.findById(organizationId);
+
+	    if (organizationOptional.isPresent()) {
+	        Organization existingOrganization = organizationOptional.get();
+	        existingOrganization.setName(updatedOrganization.getName()); // Update organization name or other fields
+
+	        Organization updatedOrg = organizationRepo.save(existingOrganization);
+	        return ResponseEntity.ok(updatedOrg);
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	}
+
 	@DeleteMapping("/organizations/delete/{organizationtId}")
 	public ResponseEntity<String> deleteOrganization(@PathVariable String organizationtId) {
 	    Optional<Organization> organizationOptional = organizationRepo.findById(organizationtId);
@@ -136,6 +155,29 @@ public class EventController {
 		return eventSaved;
 		
 	}
+	
+	@PutMapping("/events/update/{eventId}")
+	public ResponseEntity<Event> updateEvent(@PathVariable String eventId, @RequestBody EventPayload payload) {
+	    Optional<Event> eventOptional = eventRepo.findById(eventId);
+
+	    if (eventOptional.isPresent()) {
+	        Event existingEvent = eventOptional.get();
+	        Organization org = new Organization();
+	        org.setId(payload.getOrgid());
+
+	        existingEvent.setName(payload.getName());
+	        existingEvent.setIntro(payload.getIntro());
+	        existingEvent.setOrg(org);
+	        existingEvent.setLoc(payload.getLoc());
+	        existingEvent.setDate(payload.getDate());
+
+	        Event updatedEvent = eventRepo.save(existingEvent);
+	        return ResponseEntity.ok(updatedEvent);
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
+	}
+
 
 	@DeleteMapping("/events/delete/{eventId}")
 	public ResponseEntity<String> deleteEvent(@PathVariable String eventId) {
@@ -153,6 +195,55 @@ public class EventController {
     public List<Event> sortedEvents() {
 		return eventRepo.findAllByOrderByDateAsc();
 	}
+	
+    @GetMapping("/events/searchbydate")
+    public List<Event> searchEventsByPartialDate(
+            @RequestParam(required = false) String year,
+            @RequestParam(required = false) String month,
+            @RequestParam(required = false) String day) {
+
+        // Call the repository method to fetch events by partial date
+        List<Event> events = eventRepo.findByDateYearLikeAndDateMonthLikeAndDateDayLike(
+                (year != null) ? year : "",
+                (month != null) ? month : "",
+                (day != null) ? day : ""
+        );
+
+        return events;
+    }
+    /*@PostMapping("/events/searchbydate")
+	public List<Event> searchByDate(@RequestParam(required = false) String year,
+	                                 @RequestParam(required = false) String month,
+	                                 @RequestParam(required = false) String day,
+									 @RequestParam(required = false) String hour,
+	                                 @RequestParam(required = false) String minute)
+
+{
+	    List<Event> events;
+
+	    if (year != null && month != null && day != null && hour != null && minute != null) {
+	        // Search by year, month, day, hour, minute
+	        events = eventRepo.findByDateYearAndMonthAndDayAndHourAndMinute(year, month, day, hour, minute);
+	    } else if (year != null && month != null && day != null && hour != null) {
+	        // Search by year, month, day, hour
+	        events = eventRepo.findByDateYearAndMonthAndDayAndHour(year, month, day, hour);
+	    } else if (year != null && month != null && day != null) {
+	        // Search by year, month, day
+	        events = eventRepo.findByDateYearAndMonthAndDay(year, month, day);
+	    } else if (year != null && month != null) {
+	        // Search by year and month
+	        events = eventRepo.findByDateYearAndMonth(year, month);
+	    } else if (year != null) {
+	        // Search by year only
+	        events = eventRepo.findByDateYear(year);
+	    } else {
+	        // Handle other cases or return all events
+	        events = eventRepo.findAll(); 
+	    }
+
+	    return events;
+	}*/
+
 	
 	@GetMapping("/eventscount")
     public long getEventCount() {

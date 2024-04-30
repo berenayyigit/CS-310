@@ -16,8 +16,17 @@ public interface EventRepo extends MongoRepository<Event, String>{
 	public List<Event> findAllByOrg(Organization org);
 	*/
 	
-	public List<Event> findAllByOrderByDateAsc(); 
+	public List<Event> findAllByOrderByDateAsc();
 	
+	/*public List<Event> findByDateYearAndMonthAndDayAndHourAndMinute(String year, String month, String day, String hour, String minute);
+	public List<Event> findByDateYearAndMonthAndDayAndHour(String year, String month, String day, String hour);
+	public List<Event> findByDateYearAndMonthAndDay(String year, String month, String day);
+	public List<Event> findByDateYearAndMonth(String year, String month);
+	public List<Event> findByDateYear(String year);
+	*/
+	public List<Event> findByDateYearLikeAndDateMonthLikeAndDateDayLike(
+	        String year, String month, String day
+	    );
 	/*
 	public List<Event> findAllByDate(EventDate date);
 	*/
