@@ -37,8 +37,8 @@ public interface EventRepo extends MongoRepository<Event, String>{
 	*/
 	
 	
-	@Query("{'name':?0,'date':?1}")
-	public List<Event> searchByNameAndDateExactly(String name, EventDate date);
+	@Query("{'date':?0}")
+	public List<Event> searchByDateExactly(EventDate date);
 	
 	/*
 	@Query("{'org':?0,'date':?1}")

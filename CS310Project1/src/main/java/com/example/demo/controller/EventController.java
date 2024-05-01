@@ -196,21 +196,14 @@ public class EventController {
 		return eventRepo.findAllByOrderByDateAsc();
 	}
 	
-    @PostMapping("/events/searchbydate")
-    public List<Event> searchEventsByPartialDate(
-            @RequestParam(required = false) String year,
-            @RequestParam(required = false) String month,
-            @RequestParam(required = false) String day) {
-
-        // Call the repository method to fetch events by partial date
-        List<Event> events = eventRepo.findByDateYearLikeAndDateMonthLikeAndDateDayLike(
-                (year != null) ? year : "",
-                (month != null) ? month : "",
-                (day != null) ? day : ""
-        );
-
-        return events;
-    }
+	@PostMapping("/events/datesearch")
+	public List<Event> searchEventByDate(@RequestBody EventPayload payload){
+		
+		List<Event> events=eventRepo.searchByDateExactly(payload.getDate());
+		
+		return events;
+	}
+	
     /*@PostMapping("/events/searchbydate")
 	public List<Event> searchByDate(@RequestParam(required = false) String year,
 	                                 @RequestParam(required = false) String month,
@@ -249,6 +242,7 @@ public class EventController {
     public long getEventCount() {
         return eventRepo.count();
     }
+	
     
     
 }
