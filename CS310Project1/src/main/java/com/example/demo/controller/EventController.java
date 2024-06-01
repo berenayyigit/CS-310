@@ -139,6 +139,9 @@ public class EventController {
 	}	
 	
 	
+	
+	
+	
 	@PostMapping("/events/save")
 	public Event saveEvent(@RequestBody EventPayload payload)
 	{
@@ -156,6 +159,17 @@ public class EventController {
 		
 	}
 	
+	@GetMapping("/events/{id}")
+	public ResponseEntity<Event> getEventById(@PathVariable String id){
+		Optional<Event> eventOptional = eventRepo.findById(id);
+		
+		if (eventOptional.isPresent()) {
+			return ResponseEntity.ok(eventOptional.get());
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
+		
 	@PutMapping("/events/update/{eventId}")
 	public ResponseEntity<Event> updateEvent(@PathVariable String eventId, @RequestBody EventPayload payload) {
 	    Optional<Event> eventOptional = eventRepo.findById(eventId);
